@@ -1,5 +1,6 @@
 package com.github.ethanicuss.astraladditions.entities.moondragon;
 
+import com.github.ethanicuss.astraladditions.util.ModUtils;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -32,41 +33,7 @@ public class EnderBallEntity extends ExplosiveProjectileEntity {
         }
     }
 
-    private void pullPlayer(double strength, double vStrength){
-        //PlayerEntity p = this.world.getClosestPlayer(this, 32);
-        List<Entity> pl = world.getOtherEntities(this, new Box(this.getX()-16, this.getY()-32, this.getZ()-16, this.getX()+16, this.getY()+32, this.getZ()+16));
-        for (Entity p : pl) {
-            if (p instanceof LivingEntity){
-                int strMult = 1;
-                if (!(p instanceof PlayerEntity)) {
-                    strMult *= 2;
-                }
-                double xdiff = this.getX() - p.getX();
-                double zdiff = this.getZ() - p.getZ();
-                double dist = Math.sqrt(Math.pow(xdiff, 2) + Math.pow(zdiff, 2));
-                if (dist < 10) {
-                    if (xdiff == 0) {
-                        xdiff = 0.01;
-                    }
-                    if (zdiff == 0) {
-                        zdiff = 0.01;
-                    }
-                    double angleX = Math.atan(Math.abs(zdiff) / xdiff);
-                    double angleZ = Math.atan(Math.abs(xdiff) / zdiff);
-                    double cosX = Math.cos(angleX);
-                    double cosZ = Math.cos(angleZ);
-                    if (cosX == 0) {
-                        cosX = 0.01;
-                    }
-                    if (cosZ == 0) {
-                        cosZ = 0.01;
-                    }
-                    dist = -dist + 10;
-                    p.addVelocity(dist * cosX * strength * strMult * (Math.abs(angleX) / angleX), dist * vStrength * strMult, dist * cosZ * strength * strMult * (Math.abs(angleZ) / angleZ));
-                }
-            }
-        }
-    }
+
 
     @Override
     public void tick() {
@@ -80,9 +47,9 @@ public class EnderBallEntity extends ExplosiveProjectileEntity {
         }
         if (timer < 20) {
             timer--;
-            pullPlayer(0.01, 0);
+            ModUtils.pullPlayer(this, this.world, 0.01, 0, this.getX(), this.getZ(), this.getX()-16, this.getY()-32, this.getZ()-16, this.getX()+16, this.getY()+32, this.getZ()+16);
             if (timer == 0){
-                pullPlayer(-0.1, -0.01);
+                ModUtils.pullPlayer(this, this.world, -0.1, -0.01, this.getX(), this.getZ(), this.getX()-16, this.getY()-32, this.getZ()-16, this.getX()+16, this.getY()+32, this.getZ()+16);
                 int rad = 3;
                 for (var _y = 0; _y < this.world.getHeight(); _y++){
                     for (var _x = 0; _x < rad; _x++){
